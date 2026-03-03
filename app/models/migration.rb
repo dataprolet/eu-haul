@@ -632,10 +632,11 @@ class Migration < ApplicationRecord
   end
 
   # Prevent accepting new migrations when the system is at capacity.
-  # This protects against resource exhaustion when many users submit
-  # migrations simultaneously.
+  # Only counts migrations that are actually consuming resources (running jobs).
+  # Migrations parked at pending_plc (waiting for user email action) use zero
+  # resources and are excluded from this check.
   def global_migration_capacity_available
-    if Migration.active.count >= MAX_CONCURRENT_MIGRATIONS
+    if Migration.in_progress.count >= MAX_CONCURRENT_MIGRATIONS
       errors.add(:base, "The migration service is currently at capacity (#{MAX_CONCURRENT_MIGRATIONS} active migrations). " \
         "Please try again in a few minutes.")
     end
