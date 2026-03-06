@@ -372,7 +372,7 @@ class Migration < ApplicationRecord
   end
 
   def has_old_pds_tokens?
-    encrypted_old_refresh_token.present?
+    encrypted_old_refresh_token.present? && !credentials_expired?
   end
 
   def clear_old_pds_tokens!

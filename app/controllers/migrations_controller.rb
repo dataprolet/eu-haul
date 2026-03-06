@@ -710,9 +710,8 @@ class MigrationsController < ApplicationController
     end
 
     # Check if we still have old PDS tokens to make the API call
-    has_old_tokens = @migration.encrypted_old_refresh_token.present?
-
-    if has_old_tokens
+    # Must check both presence AND expiry — encrypted bytes persist in DB after credentials expire
+    if @migration.has_old_pds_tokens?
       begin
         # Request a new PLC token from the old PDS
         service = GoatService.new(@migration)
