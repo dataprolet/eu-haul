@@ -220,6 +220,8 @@ fr:
       in_queue: "En file d'attente"
       queue_default: "En attente de la fin du transfert de données d'autres migrations"
       queue_auto_start: "Votre migration démarrera automatiquement lorsqu'un créneau se libérera."
+      upload_queue_title: "En attente d'un créneau de téléversement"
+      upload_queue_detail: "Les données de votre compte ont été préparées et sont en file d'attente pour le téléversement vers le nouveau serveur. Nous traitons les téléversements dans l'ordre de réception — cela prend généralement quelques minutes, mais peut prendre plus de temps en période de forte affluence."
 
       # Blob conversion
       converting_blobs: "Conversion du format d'objets binaires hérité"
@@ -312,6 +314,7 @@ fr:
       copy_key: "Copier la clé"
       cancel_migration: "Annuler la migration"
       cancel_help: "Annulez cette migration et conservez votre compte sur son serveur actuel."
+      cancel_patience: "Si votre migration semble bloquée, ne vous inquiétez pas — elle attend probablement un créneau de téléversement. Les migrations sont traitées dans l'ordre et se poursuivront automatiquement."
       cancel_button: "Annuler la migration"
       cancel_confirm: "Êtes-vous sûr de vouloir annuler cette migration ?\n\nUn lien de confirmation sera envoyé à votre adresse e-mail. La migration ne sera annulée qu'après avoir cliqué sur ce lien."
 

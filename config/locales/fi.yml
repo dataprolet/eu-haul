@@ -220,6 +220,8 @@ fi:
       in_queue: "Jonossa"
       queue_default: "Odotetaan muiden siirtojen tiedonsiirron valmistumista"
       queue_auto_start: "Siirtosi alkaa automaattisesti, kun paikka vapautuu."
+      upload_queue_title: "Odottaa latauspaikkaa"
+      upload_queue_detail: "Tilisi tiedot on valmisteltu ja ne ovat jonossa uudelle palvelimelle lataamista varten. Käsittelemme lataukset saapumisjärjestyksessä — tämä kestää yleensä muutaman minuutin, mutta voi kestää kauemmin ruuhka-aikoina."
 
       # Blob conversion
       converting_blobs: "Muunnetaan vanhaa blob-muotoa"
@@ -312,6 +314,7 @@ fi:
       copy_key: "Kopioi avain"
       cancel_migration: "Peruuta siirto"
       cancel_help: "Peruuta tämä siirto ja säilytä tilisi nykyisellä palvelimella."
+      cancel_patience: "Jos siirtosi näyttää jumiutuneen, älä huoli — se todennäköisesti odottaa latauspaikkaa. Siirrot käsitellään järjestyksessä ja jatkuvat automaattisesti."
       cancel_button: "Peruuta siirto"
       cancel_confirm: "Haluatko varmasti peruuttaa tämän siirron?\n\nVahvistuslinkki lähetetään sähköpostiisi. Siirto peruutetaan vasta, kun napsautat kyseistä linkkiä."
 

@@ -220,6 +220,8 @@ mt:
       in_queue: "Fil-Kju"
       queue_default: "Qed tistenna biex migrazzjonijiet oħra jlestu t-trasferiment tad-data"
       queue_auto_start: "Il-migrazzjoni tiegħek tibda awtomatikament meta jinfetaħ slot."
+      upload_queue_title: "Qed jistenna slot ta' upload"
+      upload_queue_detail: "Id-data tal-kont tiegħek ġiet ippreparata u qiegħda f'kju għall-upload lejn is-server il-ġdid. Nipproċessaw l-uploads fl-ordni li fihom waslu — dan normalment jieħu ftit minuti iżda jista' jieħu aktar fi żminijiet ta' traffiku għoli."
 
       # Blob conversion
       converting_blobs: "Qed jikkonverti l-format tal-blobs antik"
@@ -312,6 +314,7 @@ mt:
       copy_key: "Ikkopja ċ-Ċavetta"
       cancel_migration: "Ikkanċella l-Migrazzjoni"
       cancel_help: "Ikkanċella din il-migrazzjoni u żomm il-kont tiegħek fuq is-server attwali."
+      cancel_patience: "Jekk il-migrazzjoni tiegħek tidher li weħlet, tinkwetax — x'aktarx qed tistenna slot ta' upload. Il-migrazzjonijiet jiġu pproċessati bl-ordni u jkomplu awtomatikament."
       cancel_button: "Ikkanċella l-Migrazzjoni"
       cancel_confirm: "Int żgur li trid tikkanċella din il-migrazzjoni?\n\nLink ta' konferma se jintbagħat lill-email tiegħek. Il-migrazzjoni tiġi kkanċellata biss wara li tagħfas fuq dak il-link."
 

@@ -220,6 +220,8 @@ sv:
       in_queue: "I kö"
       queue_default: "Väntar på att andra flyttningar ska slutföra dataöverföring"
       queue_auto_start: "Din flytt startar automatiskt när en plats blir ledig."
+      upload_queue_title: "Väntar på uppladdningsplats"
+      upload_queue_detail: "Dina kontouppgifter har förberetts och står i kö för uppladdning till den nya servern. Vi bearbetar uppladdningar i den ordning de togs emot — detta tar vanligtvis några minuter men kan ta längre tid under högtrafik."
 
       # Blob conversion
       converting_blobs: "Konverterar äldre blobformat"
@@ -312,6 +314,7 @@ sv:
       copy_key: "Kopiera nyckel"
       cancel_migration: "Avbryt flytt"
       cancel_help: "Avbryt denna flytt och behåll ditt konto på dess nuvarande server."
+      cancel_patience: "Om din flytt verkar ha fastnat, oroa dig inte — den väntar troligen på en uppladdningsplats. Flyttar bearbetas i ordning och fortsätter automatiskt."
       cancel_button: "Avbryt flytt"
       cancel_confirm: "Är du säker på att du vill avbryta denna flytt?\n\nEn bekräftelselänk skickas till din e-post. Flytten avbryts först efter att du klickar på den länken."
 

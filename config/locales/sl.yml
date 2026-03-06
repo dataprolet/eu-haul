@@ -220,6 +220,8 @@ sl:
       in_queue: "V čakalni vrsti"
       queue_default: "Čakanje na dokončanje prenosov podatkov drugih selitev"
       queue_auto_start: "Vaša selitev se bo začela samodejno, ko se sprosti mesto."
+      upload_queue_title: "Čakanje na mesto za nalaganje"
+      upload_queue_detail: "Podatki vašega računa so pripravljeni in čakajo v vrsti za nalaganje na novi strežnik. Nalaganja obdelujemo po vrstnem redu prejema — to običajno traja le nekaj minut, a lahko traja dlje v obdobjih velike obremenjenosti."
 
       # Blob conversion
       converting_blobs: "Pretvarjanje starega formata blobov"
@@ -312,6 +314,7 @@ sl:
       copy_key: "Kopiraj ključ"
       cancel_migration: "Prekliči selitev"
       cancel_help: "Prekličite to selitev in obdržite račun na trenutnem strežniku."
+      cancel_patience: "Če se zdi, da je vaša selitev obstala, ne skrbite — verjetno čaka na mesto za nalaganje. Selitve se obdelujejo po vrsti in se bodo samodejno nadaljevale."
       cancel_button: "Prekliči selitev"
       cancel_confirm: "Ali ste prepričani, da želite preklicati to selitev?\n\nPotrditvena povezava bo poslana na vaš e-poštni naslov. Selitev bo preklicana šele, ko kliknete na to povezavo."
 

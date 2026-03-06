@@ -220,6 +220,8 @@ it:
       in_queue: "In coda"
       queue_default: "In attesa che altre migrazioni completino il trasferimento dati"
       queue_auto_start: "La tua migrazione partirà automaticamente quando si libera un posto."
+      upload_queue_title: "In attesa di uno slot di caricamento"
+      upload_queue_detail: "I dati del tuo account sono stati preparati e sono in coda per il caricamento sul nuovo server. Elaboriamo i caricamenti nell'ordine in cui sono stati ricevuti — di solito bastano pochi minuti, ma nei periodi di punta potrebbe volerci più tempo."
 
       # Blob conversion
       converting_blobs: "Conversione del formato blob legacy"
@@ -312,6 +314,7 @@ it:
       copy_key: "Copia chiave"
       cancel_migration: "Annulla migrazione"
       cancel_help: "Annulla questa migrazione e mantieni il tuo account sul server attuale."
+      cancel_patience: "Se la tua migrazione sembra bloccata, non preoccuparti — probabilmente è in attesa di uno slot di caricamento. Le migrazioni vengono elaborate in ordine e proseguiranno automaticamente."
       cancel_button: "Annulla migrazione"
       cancel_confirm: "Sei sicuro di voler annullare questa migrazione?\n\nUn link di conferma verrà inviato alla tua e-mail. La migrazione verrà annullata solo dopo aver fatto clic su quel link."
 

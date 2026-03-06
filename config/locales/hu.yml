@@ -220,6 +220,8 @@ hu:
       in_queue: "Varakozasi sorban"
       queue_default: "Varakozas mas migraciok adatatvitelnek befejezesere"
       queue_auto_start: "A migracioja automatikusan elindul, amint felszabadul egy hely."
+      upload_queue_title: "Várakozás feltöltési helyre"
+      upload_queue_detail: "Fiókja adatai elkészültek és sorban állnak az új szerverre történő feltöltésre. A feltöltéseket érkezési sorrendben dolgozzuk fel — ez általában néhány percet vesz igénybe, de csúcsidőszakokban tovább is tarthat."
 
       # Blob conversion
       converting_blobs: "Regi blob-formatum konvertalasa"
@@ -312,6 +314,7 @@ hu:
       copy_key: "Kulcs masolasa"
       cancel_migration: "Migracio megszakitasa"
       cancel_help: "Szakitsa meg ezt a migraciot, es tartsa meg fiokjat a jelenlegi szerveren."
+      cancel_patience: "Ha úgy tűnik, hogy a migrációja elakadt, ne aggódjon — valószínűleg feltöltési helyre vár. A migrációkat sorrendben dolgozzuk fel, és automatikusan folytatódnak."
       cancel_button: "Migracio megszakitasa"
       cancel_confirm: "Biztos, hogy meg szeretne szakitani ezt a migraciot?\n\nMegerosito hivatkozast kuldunk az e-mail cimere. A migracio csak a hivatkozasra kattintas utan kerul megszakitasra."
 

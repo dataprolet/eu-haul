@@ -381,6 +381,12 @@
             <div id="blob-progress-section" class="alert alert-info border-start border-primary border-4 rounded-1 py-2 px-3 mb-3 small">
               <%= t('migrations.show.preparing_blobs', count: @migration.progress_data['blob_count']).html_safe %>
             </div>
+          <% else %>
+            <div id="blob-waiting-section" class="alert alert-info border-start border-primary border-4 rounded-1 py-2 px-3 mb-3 small">
+              <div class="fw-semibold text-primary mb-1"><%= t('migrations.show.upload_queue_title') %></div>
+              <p class="text-primary small mb-1"><%= t('migrations.show.upload_queue_detail') %></p>
+              <p class="text-primary small mb-0" style="opacity: 0.8;"><%= t('migrations.show.page_auto_update') %></p>
+            </div>
           <% end %>
         <% end %>
 
@@ -664,19 +670,24 @@
       <% end %>
 
       <% if @migration.cancellable? && @migration.email_verified? %>
-        <div class="backup-sidebar-card" style="border-left-color: #dc2626;">
-          <div class="backup-sidebar-header" style="background: #fee2e2; color: #991b1b;">
-            <%= t('migrations.show.cancel_migration') %>
-          </div>
+        <div class="backup-sidebar-card" style="border-left-color: #9ca3af;">
           <div class="backup-sidebar-body">
-            <p><%= t('migrations.show.cancel_help') %></p>
-            <form action="<%= request_cancellation_by_token_path(@migration.token) %>" method="post"
-                  onsubmit="return confirm('<%= j t('migrations.show.cancel_confirm') %>');">
-              <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-              <button type="submit" class="backup-download-btn" style="background: #dc2626; width: 100%; border: none; cursor: pointer;">
-                <%= t('migrations.show.cancel_button') %>
-              </button>
-            </form>
+            <details>
+              <summary class="text-body-secondary small fw-medium" style="cursor: pointer;">
+                <%= t('migrations.show.cancel_migration') %>
+              </summary>
+              <div class="mt-2">
+                <p class="text-body-secondary small"><%= t('migrations.show.cancel_help') %></p>
+                <p class="text-body-secondary small mb-2"><%= t('migrations.show.cancel_patience') %></p>
+                <form action="<%= request_cancellation_by_token_path(@migration.token) %>" method="post"
+                      onsubmit="return confirm('<%= j t('migrations.show.cancel_confirm') %>');">
+                  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                  <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                    <%= t('migrations.show.cancel_button') %>
+                  </button>
+                </form>
+              </div>
+            </details>
           </div>
         </div>
       <% end %>

@@ -220,6 +220,8 @@ hr:
       in_queue: "U redu cekanja"
       queue_default: "Cekanje da druge migracije zavrse s prijenosom podataka"
       queue_auto_start: "Vasa migracija ce automatski zapoceti kada se oslobodi mjesto."
+      upload_queue_title: "Čekanje na mjesto za prijenos"
+      upload_queue_detail: "Podaci vašeg računa su pripremljeni i nalaze se u redu za prijenos na novi poslužitelj. Prijenose obrađujemo redom kojim su zaprimljeni — to obično traje nekoliko minuta, ali može potrajati duže u vršnim razdobljima."
 
       # Blob conversion
       converting_blobs: "Pretvorba zastarjelog formata blobova"
@@ -312,6 +314,7 @@ hr:
       copy_key: "Kopiraj kljuc"
       cancel_migration: "Otkazi migraciju"
       cancel_help: "Otkazite ovu migraciju i zadrzite racun na trenutnom posluzitelju."
+      cancel_patience: "Ako se čini da je vaša migracija zapela, ne brinite — vjerojatno čeka mjesto za prijenos. Migracije se obrađuju redom i nastavit će se automatski."
       cancel_button: "Otkazi migraciju"
       cancel_confirm: "Jeste li sigurni da zelite otkazati ovu migraciju?\n\nPoveznica za potvrdu bit ce poslana na vasu e-postu. Migracija ce biti otkazana tek nakon sto kliknete tu poveznicu."
 

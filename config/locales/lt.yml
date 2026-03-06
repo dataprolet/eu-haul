@@ -220,6 +220,8 @@ lt:
       in_queue: "Eilėje"
       queue_default: "Laukiama, kol kiti perkėlimai baigs duomenų perdavimą"
       queue_auto_start: "Jūsų perkėlimas prasidės automatiškai, kai atsilaisvins vieta."
+      upload_queue_title: "Laukiama įkėlimo vietos"
+      upload_queue_detail: "Jūsų paskyros duomenys paruošti ir laukia eilėje įkėlimui į naują serverį. Įkėlimus apdorojame gavimo eilės tvarka — paprastai tai užtrunka kelias minutes, tačiau piko metu gali užtrukti ilgiau."
 
       # Blob conversion
       converting_blobs: "Senojo blob formato konvertavimas"
@@ -312,6 +314,7 @@ lt:
       copy_key: "Kopijuoti raktą"
       cancel_migration: "Atšaukti perkėlimą"
       cancel_help: "Atšaukite šį perkėlimą ir palikite paskyrą dabartiniame serveryje."
+      cancel_patience: "Jei atrodo, kad jūsų perkėlimas sustojo, nesijaudinkite — greičiausiai jis laukia įkėlimo vietos. Perkėlimai apdorojami eilės tvarka ir bus tęsiami automatiškai."
       cancel_button: "Atšaukti perkėlimą"
       cancel_confirm: "Ar tikrai norite atšaukti šį perkėlimą?\n\nPatvirtinimo nuoroda bus išsiųsta jūsų el. paštu. Perkėlimas bus atšauktas tik paspaudus tą nuorodą."
 

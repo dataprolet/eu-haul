@@ -220,6 +220,8 @@ ro:
       in_queue: "În coadă"
       queue_default: "Se așteaptă finalizarea altor migrări"
       queue_auto_start: "Migrarea dumneavoastră va porni automat când se eliberează un loc."
+      upload_queue_title: "Se așteaptă un loc de încărcare"
+      upload_queue_detail: "Datele contului dumneavoastră au fost pregătite și sunt la rând pentru încărcare pe noul server. Încărcările sunt procesate în ordinea în care au fost primite — de obicei durează câteva minute, dar poate dura mai mult în perioadele aglomerate."
 
       # Blob conversion
       converting_blobs: "Se convertesc blob-urile în format vechi"
@@ -312,6 +314,7 @@ ro:
       copy_key: "Copiază cheia"
       cancel_migration: "Anulare migrare"
       cancel_help: "Anulați această migrare și păstrați contul pe serverul actual."
+      cancel_patience: "Dacă migrarea dumneavoastră pare blocată, nu vă faceți griji — cel mai probabil așteaptă un loc de încărcare. Migrările sunt procesate în ordine și vor continua automat."
       cancel_button: "Anulare migrare"
       cancel_confirm: "Sunteți sigur(ă) că doriți să anulați această migrare?\n\nUn link de confirmare va fi trimis pe email. Migrarea va fi anulată doar după ce faceți clic pe acel link."
 

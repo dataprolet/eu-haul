@@ -220,6 +220,8 @@ nb:
       in_queue: "I kø"
       queue_default: "Venter på at andre migreringer skal fullføre dataoverføring"
       queue_auto_start: "Migreringen din starter automatisk når en plass blir ledig."
+      upload_queue_title: "Venter på opplastingsplass"
+      upload_queue_detail: "Kontodataene dine er klargjort og står i kø for opplasting til den nye serveren. Vi behandler opplastinger i den rekkefølgen de ble mottatt — dette tar vanligvis noen minutter, men kan ta lenger i travle perioder."
 
       # Blob conversion
       converting_blobs: "Konverterer eldre blob-format"
@@ -312,6 +314,7 @@ nb:
       copy_key: "Kopier nøkkel"
       cancel_migration: "Avbryt migrering"
       cancel_help: "Avbryt denne migreringen og behold kontoen din på den nåværende serveren."
+      cancel_patience: "Hvis migreringen din ser ut til å ha stoppet opp, ikke bekymre deg — den venter sannsynligvis på en opplastingsplass. Migreringer behandles i rekkefølge og vil fortsette automatisk."
       cancel_button: "Avbryt migrering"
       cancel_confirm: "Er du sikker på at du vil avbryte denne migreringen?\n\nEn bekreftelseslenke sendes til e-posten din. Migreringen avbrytes først når du klikker på den lenken."
 

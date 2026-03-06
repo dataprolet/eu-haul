@@ -27,7 +27,7 @@
 #   GET  /migrations/:id/status (JSON only)
 
 class MigrationsController < ApplicationController
-  before_action :set_migration, only: [:show, :verify_email, :resend_verification, :submit_plc_token, :request_new_plc_token, :reauthenticate, :status, :download_backup, :retry, :export_recovery_data, :retry_failed_blobs, :confirm_delete]
+  before_action :set_migration, only: [:show, :verify_email, :resend_verification, :submit_plc_token, :request_new_plc_token, :reauthenticate, :status, :download_backup, :retry, :export_recovery_data, :retry_failed_blobs, :confirm_delete, :request_cancellation, :confirm_cancellation]
   before_action :set_security_headers
 
   # GET /migrations/new

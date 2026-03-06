@@ -220,6 +220,8 @@ nl:
       in_queue: "In wachtrij"
       queue_default: "Wachten tot andere migraties hun gegevensoverdracht hebben voltooid"
       queue_auto_start: "Uw migratie start automatisch wanneer er een plek vrijkomt."
+      upload_queue_title: "Wachten op uploadplaats"
+      upload_queue_detail: "Uw accountgegevens zijn voorbereid en staan in de wachtrij voor upload naar de nieuwe server. Uploads worden verwerkt in de volgorde van ontvangst — dit duurt doorgaans enkele minuten, maar kan langer duren tijdens drukke perioden."
 
       # Blob conversion
       converting_blobs: "Verouderd blob-formaat converteren"
@@ -312,6 +314,7 @@ nl:
       copy_key: "Sleutel kopiëren"
       cancel_migration: "Migratie annuleren"
       cancel_help: "Annuleer deze migratie en behoud uw account op de huidige server."
+      cancel_patience: "Als uw migratie vast lijkt te zitten, maak u geen zorgen — waarschijnlijk wacht deze op een uploadplaats. Migraties worden op volgorde verwerkt en gaan automatisch verder."
       cancel_button: "Migratie annuleren"
       cancel_confirm: "Weet u zeker dat u deze migratie wilt annuleren?\n\nEr wordt een bevestigingslink naar uw e-mailadres gestuurd. De migratie wordt pas geannuleerd nadat u op die link klikt."
 

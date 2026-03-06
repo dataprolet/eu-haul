@@ -220,6 +220,8 @@ ga:
       in_queue: "Sa scuaine"
       queue_default: "Ag fanacht le himircí eile an t-aistriú sonraí a chríochnú"
       queue_auto_start: "Tosóidh d'imirce go huathoibríoch nuair a osclaíonn sliotán."
+      upload_queue_title: "Ag fanacht le sliotán uaslódála"
+      upload_queue_detail: "Tá sonraí do chuntais ullmhaithe agus i scuaine le huaslódáil chuig an bhfreastalaí nua. Próiseálaimid uaslódálacha san ord a fuarthas iad — de ghnáth ní thógann sé seo ach cúpla nóiméad, ach d'fhéadfadh sé tuilleadh ama a thógáil le linn tréimhsí gnóthacha."
 
       # Blob conversion
       converting_blobs: "Ag tiontú formáid oidhreachta blob"
@@ -312,6 +314,7 @@ ga:
       copy_key: "Cóipeáil eochair"
       cancel_migration: "Cealaigh an imirce"
       cancel_help: "Cealaigh an imirce seo agus coinnigh do chuntas ar a fhreastalaí reatha."
+      cancel_patience: "Má tá cuma ar d'imirce go bhfuil sí i bhfostú, ná bí buartha — is dócha go bhfuil sí ag fanacht le sliotán uaslódála. Próiseáiltear imircí in ord agus leanfaidh siad ar aghaidh go huathoibríoch."
       cancel_button: "Cealaigh an imirce"
       cancel_confirm: "An bhfuil tú cinnte gur mhaith leat an imirce seo a chealú?\n\nSeolfar nasc deimhnithe chuig do ríomhphost. Ní chealófar an imirce ach tar éis duit cliceáil ar an nasc sin."
 

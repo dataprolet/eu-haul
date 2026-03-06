@@ -220,6 +220,8 @@ pl:
       in_queue: "W kolejce"
       queue_default: "Oczekiwanie na zakończenie transferu danych przez inne migracje"
       queue_auto_start: "Twoja migracja rozpocznie się automatycznie, gdy zwolni się miejsce."
+      upload_queue_title: "Oczekiwanie na miejsce do przesyłania"
+      upload_queue_detail: "Dane Twojego konta zostały przygotowane i czekają w kolejce na przesłanie na nowy serwer. Przesyłanie odbywa się w kolejności zgłoszeń — zazwyczaj trwa to kilka minut, ale w okresach dużego ruchu może potrwać dłużej."
 
       # Blob conversion
       converting_blobs: "Konwersja starszego formatu blobów"
@@ -312,6 +314,7 @@ pl:
       copy_key: "Kopiuj klucz"
       cancel_migration: "Anuluj migrację"
       cancel_help: "Anuluj tę migrację i zachowaj konto na aktualnym serwerze."
+      cancel_patience: "Jeśli Twoja migracja wydaje się zablokowana, nie martw się — prawdopodobnie czeka na miejsce do przesyłania. Migracje są przetwarzane po kolei i będą kontynuowane automatycznie."
       cancel_button: "Anuluj migrację"
       cancel_confirm: "Czy na pewno chcesz anulować tę migrację?\n\nLink potwierdzający zostanie wysłany na Twój adres e-mail. Migracja zostanie anulowana dopiero po kliknięciu tego linku."
 

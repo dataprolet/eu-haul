@@ -220,6 +220,8 @@ es:
       in_queue: "En cola"
       queue_default: "Esperando a que otras migraciones terminen de transferir datos"
       queue_auto_start: "Su migración comenzará automáticamente cuando se libere un espacio."
+      upload_queue_title: "Esperando turno de subida"
+      upload_queue_detail: "Los datos de su cuenta han sido preparados y están en cola para su subida al nuevo servidor. Procesamos las subidas en el orden en que se recibieron — esto suele tardar unos minutos, pero puede tardar más en periodos de alta demanda."
 
       # Blob conversion
       converting_blobs: "Convirtiendo formato de blobs heredado"
@@ -312,6 +314,7 @@ es:
       copy_key: "Copiar clave"
       cancel_migration: "Cancelar migración"
       cancel_help: "Cancele esta migración y mantenga su cuenta en su servidor actual."
+      cancel_patience: "Si su migración parece estar atascada, no se preocupe — probablemente está esperando un turno de subida. Las migraciones se procesan en orden y continuarán automáticamente."
       cancel_button: "Cancelar migración"
       cancel_confirm: "¿Está seguro de que desea cancelar esta migración?\n\nSe enviará un enlace de confirmación a su correo electrónico. La migración solo se cancelará después de hacer clic en ese enlace."
 

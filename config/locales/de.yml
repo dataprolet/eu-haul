@@ -220,6 +220,8 @@ de:
       in_queue: "In der Warteschlange"
       queue_default: "Warten, bis andere Migrationen die Datenübertragung abgeschlossen haben"
       queue_auto_start: "Ihre Migration startet automatisch, sobald ein Platz frei wird."
+      upload_queue_title: "Warten auf Upload-Platz"
+      upload_queue_detail: "Ihre Kontodaten wurden vorbereitet und stehen in der Warteschlange für den Upload zum neuen Server. Uploads werden in der Reihenfolge ihres Eingangs verarbeitet — dies dauert in der Regel einige Minuten, kann aber in Stoßzeiten länger dauern."
 
       # Blob conversion
       converting_blobs: "Konvertierung des älteren Blob-Formats"
@@ -312,6 +314,7 @@ de:
       copy_key: "Schlüssel kopieren"
       cancel_migration: "Migration abbrechen"
       cancel_help: "Brechen Sie diese Migration ab und behalten Sie Ihr Konto auf dem aktuellen Server."
+      cancel_patience: "Wenn Ihre Migration stillzustehen scheint, keine Sorge — sie wartet wahrscheinlich auf einen Upload-Platz. Migrationen werden der Reihe nach verarbeitet und laufen automatisch weiter."
       cancel_button: "Migration abbrechen"
       cancel_confirm: "Sind Sie sicher, dass Sie diese Migration abbrechen möchten?\n\nEin Bestätigungslink wird an Ihre E-Mail gesendet. Die Migration wird erst nach Klick auf diesen Link abgebrochen."
 

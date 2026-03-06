@@ -220,6 +220,8 @@ lv:
       in_queue: "Rindā"
       queue_default: "Gaida, kamēr citas migrācijas pabeidz datu pārsūtīšanu"
       queue_auto_start: "Jūsu migrācija automātiski sāksies, kad atbrīvosies vieta."
+      upload_queue_title: "Gaida augšupielādes vietu"
+      upload_queue_detail: "Jūsu konta dati ir sagatavoti un atrodas rindā augšupielādei uz jauno serveri. Augšupielādes tiek apstrādātas saņemšanas secībā — parasti tas aizņem dažas minūtes, bet noslogotākos periodos var ilgt ilgāk."
 
       # Blob conversion
       converting_blobs: "Vecā blob formāta konvertēšana"
@@ -312,6 +314,7 @@ lv:
       copy_key: "Kopēt atslēgu"
       cancel_migration: "Atcelt migrāciju"
       cancel_help: "Atceliet šo migrāciju un paturiet kontu pašreizējā serverī."
+      cancel_patience: "Ja jūsu migrācija šķiet iestrēgusi, neuztraucieties — visticamāk tā gaida augšupielādes vietu. Migrācijas tiek apstrādātas secīgi un turpināsies automātiski."
       cancel_button: "Atcelt migrāciju"
       cancel_confirm: "Vai tiešām vēlaties atcelt šo migrāciju?\n\nApstiprināšanas saite tiks nosūtīta uz jūsu e-pastu. Migrācija tiks atcelta tikai pēc šīs saites noklikšķināšanas."
 

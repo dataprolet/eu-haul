@@ -220,6 +220,8 @@ et:
       in_queue: "Järjekorras"
       queue_default: "Ootame, kuni teised migreerimised lõpetavad andmete ülekandmise"
       queue_auto_start: "Teie migreerimine algab automaatselt, kui koht vabaneb."
+      upload_queue_title: "Üleslaadimiskoha ootamine"
+      upload_queue_detail: "Teie konto andmed on ette valmistatud ja ootavad järjekorras uude serverisse üleslaadimist. Üleslaadimisi töödeldakse saabumise järjekorras — tavaliselt võtab see mõne minuti, kuid tipptundidel võib kauem aega minna."
 
       # Blob conversion
       converting_blobs: "Vana blobivormingu teisendamine"
@@ -312,6 +314,7 @@ et:
       copy_key: "Kopeeri võti"
       cancel_migration: "Tühista migreerimine"
       cancel_help: "Tühistage see migreerimine ja säilitage oma konto praegusel serveril."
+      cancel_patience: "Kui teie migreerimine tundub seisma jäänud olevat, ärge muretsege — see ootab tõenäoliselt üleslaadimiskohta. Migreerimisi töödeldakse järjekorras ja need jätkuvad automaatselt."
       cancel_button: "Tühista migreerimine"
       cancel_confirm: "Kas olete kindel, et soovite selle migreerimise tühistada?\n\nKinnituslink saadetakse teie e-postile. Migreerimine tühistatakse alles pärast sellel lingil klõpsamist."
 

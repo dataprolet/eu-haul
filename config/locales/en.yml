@@ -221,6 +221,8 @@ en:
       in_queue: "In Queue"
       queue_default: "Waiting for other migrations to finish transferring data"
       queue_auto_start: "Your migration will start automatically when a slot opens up."
+      upload_queue_title: "Waiting for upload slot"
+      upload_queue_detail: "Your account data has been prepared and is queued for upload to the new server. We process uploads in the order they were received — this typically takes a few minutes but can take longer during busy periods."
 
       # Blob conversion
       converting_blobs: "Converting legacy blob format"
@@ -313,6 +315,7 @@ en:
       copy_key: "Copy Key"
       cancel_migration: "Cancel Migration"
       cancel_help: "Cancel this migration and keep your account on its current server."
+      cancel_patience: "If your migration appears stuck, don't worry — it is likely waiting for an upload slot. Migrations are processed in order and will continue automatically."
       cancel_button: "Cancel Migration"
       cancel_confirm: "Are you sure you want to cancel this migration?\n\nA confirmation link will be sent to your email. The migration will only be cancelled after you click that link."
 

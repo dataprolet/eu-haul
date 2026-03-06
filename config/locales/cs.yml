@@ -220,6 +220,8 @@ cs:
       in_queue: "Ve frontě"
       queue_default: "Čekání na dokončení přenosu dat ostatních migrací"
       queue_auto_start: "Vaše migrace začne automaticky, jakmile se uvolní místo."
+      upload_queue_title: "Čekání na místo pro nahrávání"
+      upload_queue_detail: "Data vašeho účtu byla připravena a čekají ve frontě na nahrání na nový server. Nahrávání zpracováváme v pořadí, v jakém byla přijata — obvykle to trvá několik minut, ale v období špičky to může trvat déle."
 
       # Blob conversion
       converting_blobs: "Převod staršího formátu blobů"
@@ -312,6 +314,7 @@ cs:
       copy_key: "Kopírovat klíč"
       cancel_migration: "Zrušit migraci"
       cancel_help: "Zrušte tuto migraci a ponechte svůj účet na aktuálním serveru."
+      cancel_patience: "Pokud se vaše migrace zdá zaseknutá, nezoufejte — pravděpodobně čeká na místo pro nahrávání. Migrace se zpracovávají postupně a budou pokračovat automaticky."
       cancel_button: "Zrušit migraci"
       cancel_confirm: "Jste si jisti, že chcete tuto migraci zrušit?\n\nNa váš e-mail bude odeslán potvrzovací odkaz. Migrace bude zrušena až po kliknutí na tento odkaz."
 
