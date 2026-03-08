@@ -52,6 +52,21 @@ module EuroskyConfig
   LOG_RETENTION_DAYS = ENV.fetch('LOG_RETENTION_DAYS', '30').freeze
   REPO_URL = ENV.fetch('REPO_URL', 'https://github.com/eurosky-social/u-haul').freeze
 
+  # Hosting provider details (used in the privacy policy infrastructure section).
+  # Leave unset if you prefer to point PRIVACY_POLICY_URL to an external document instead.
+  # HOSTING_PROVIDER_NAME       – Legal name of the infrastructure/hosting provider.
+  # HOSTING_PROVIDER_ADDRESS    – Full postal address of the hosting provider.
+  # HOSTING_PROVIDER_DATA_LOCATION – Human-readable data location, e.g. "European Union / EEA".
+  # HOSTING_PROVIDER_TOM_URL    – URL to the provider's Technical and Organizational Measures doc.
+  # HOSTING_PROVIDER_CERTIFICATIONS – Comma-separated list of certifications, e.g. "ISO 27001, BSI C5".
+  # HOSTING_PROVIDER_SUBPROCESSORS_URL – URL to the provider's sub-processor / DPA page.
+  HOSTING_PROVIDER_NAME = ENV['HOSTING_PROVIDER_NAME']&.freeze
+  HOSTING_PROVIDER_ADDRESS = ENV['HOSTING_PROVIDER_ADDRESS']&.freeze
+  HOSTING_PROVIDER_DATA_LOCATION = ENV.fetch('HOSTING_PROVIDER_DATA_LOCATION', 'European Union / EEA').freeze
+  HOSTING_PROVIDER_TOM_URL = ENV['HOSTING_PROVIDER_TOM_URL']&.freeze
+  HOSTING_PROVIDER_CERTIFICATIONS = ENV['HOSTING_PROVIDER_CERTIFICATIONS']&.freeze
+  HOSTING_PROVIDER_SUBPROCESSORS_URL = ENV['HOSTING_PROVIDER_SUBPROCESSORS_URL']&.freeze
+
   # Validation
   class ConfigurationError < StandardError; end
 

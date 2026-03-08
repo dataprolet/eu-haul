@@ -126,17 +126,57 @@
       <li><strong>Target PDS</strong>: Your account credentials are passed to the destination Personal Data Server you specify, which operates under its own privacy policy.</li>
       <li><strong>Source PDS (Bluesky / bsky.social)</strong>: The migration tool reads your repository data from your current PDS.</li>
       <li><strong>Email provider</strong>: Transactional emails are sent via the SMTP provider configured by the Operator.</li>
+      <% if EuroskyConfig::HOSTING_PROVIDER_NAME.present? %>
+      <li><strong>Infrastructure provider (<%= EuroskyConfig::HOSTING_PROVIDER_NAME %>)</strong>: Our hosting provider processes data on our behalf as a data processor under a GDPR Art.&nbsp;28 Data Processing Agreement. See Section&nbsp;6 for full details.</li>
+      <% end %>
       <li><strong>Legal requirements</strong>: We may disclose data if required by applicable law.</li>
     </ul>
 
-    <h2>6. Security</h2>
+    <% if EuroskyConfig::HOSTING_PROVIDER_NAME.present? %>
+    <h2>6. Hosting Infrastructure &amp; Sub-processors</h2>
+    <p>
+      This Service is hosted on infrastructure provided by
+      <strong><%= EuroskyConfig::HOSTING_PROVIDER_NAME %></strong><% if EuroskyConfig::HOSTING_PROVIDER_ADDRESS.present? %>
+      (<%= EuroskyConfig::HOSTING_PROVIDER_ADDRESS %>)<% end %>.
+      This provider acts as a data processor under a Data Processing Agreement (DPA) concluded
+      pursuant to Art.&nbsp;28 GDPR.
+    </p>
+    <p>
+      Under this DPA, the hosting provider processes the following categories of personal data on
+      our behalf: personal master data, communication data (e.g. email addresses), and technical
+      log data, affecting end users of this service.
+    </p>
+    <p>
+      <strong>Data location:</strong> Data is processed within
+      <strong><%= EuroskyConfig::HOSTING_PROVIDER_DATA_LOCATION %></strong>.
+    </p>
+    <% if EuroskyConfig::HOSTING_PROVIDER_SUBPROCESSORS_URL.present? %>
+    <p>
+      The hosting provider's approved sub-processors and data processing details are listed at:
+      <a href="<%= EuroskyConfig::HOSTING_PROVIDER_SUBPROCESSORS_URL %>" target="_blank" rel="noopener"><%= EuroskyConfig::HOSTING_PROVIDER_SUBPROCESSORS_URL %></a>.
+    </p>
+    <% end %>
+    <% end %>
+
+    <h2>7. Security</h2>
     <p>
       Sensitive credentials are encrypted at rest using AES-256-GCM (Lockbox).
       Connections to this service use TLS. Rate limiting is applied to all endpoints.
       Despite these measures, no system is perfectly secure — use a strong, unique password.
     </p>
+    <% if EuroskyConfig::HOSTING_PROVIDER_NAME.present? %>
+    <p>
+      Our hosting provider (<%= EuroskyConfig::HOSTING_PROVIDER_NAME %>) implements Technical and
+      Organizational Measures (TOMs) in accordance with Art.&nbsp;32 GDPR.<% if EuroskyConfig::HOSTING_PROVIDER_CERTIFICATIONS.present? %>
+      Certifications held: <strong><%= EuroskyConfig::HOSTING_PROVIDER_CERTIFICATIONS %></strong>.<% end %>
+      <% if EuroskyConfig::HOSTING_PROVIDER_TOM_URL.present? %>
+      Full TOM documentation:
+      <a href="<%= EuroskyConfig::HOSTING_PROVIDER_TOM_URL %>" target="_blank" rel="noopener"><%= EuroskyConfig::HOSTING_PROVIDER_TOM_URL %></a>.
+      <% end %>
+    </p>
+    <% end %>
 
-    <h2>7. Your Rights</h2>
+    <h2>8. Your Rights</h2>
     <p>
       Depending on your jurisdiction (e.g. GDPR, CCPA) you may have the right to access, correct, or delete
       your personal data, or to object to certain processing. To exercise these rights, contact us at
@@ -147,22 +187,22 @@
       data to retrieve. We will respond within 30 days.
     </p>
 
-    <h2>8. Cookies &amp; Analytics</h2>
+    <h2>9. Cookies &amp; Analytics</h2>
     <p>
       This Service does not use tracking cookies. A session cookie is set by the Rails framework for
       CSRF protection only. No cross-site tracking occurs.
     </p>
 
-    <h2>9. Children</h2>
+    <h2>10. Children</h2>
     <p>This Service is not directed at children under 13 (or 16 in the EU). We do not knowingly collect data from minors.</p>
 
-    <h2>10. Changes to This Policy</h2>
+    <h2>11. Changes to This Policy</h2>
     <p>
       We may update this policy. Material changes will be announced on the migration page or via email
       (if you provided one). Continued use after changes constitutes acceptance.
     </p>
 
-    <h2>11. Contact</h2>
+    <h2>12. Contact</h2>
     <p>
       <strong><%= EuroskyConfig::OPERATOR_NAME %></strong><br>
       Email: <a href="mailto:<%= EuroskyConfig::OPERATOR_EMAIL %>"><%= EuroskyConfig::OPERATOR_EMAIL %></a><br>
