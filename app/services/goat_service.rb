@@ -244,6 +244,13 @@ class GoatService
       body[:inviteCode] = migration.invite_code
     end
 
+    # Add hCaptcha verification code if present (for PDS gatekeeper captcha enforcement)
+    hcaptcha_token = migration.progress_data&.dig('hcaptcha_token')
+    if hcaptcha_token.present?
+      logger.info("Including verificationCode for account creation (hCaptcha)")
+      body[:verificationCode] = hcaptcha_token
+    end
+
     # Use raw HTTParty - service auth token goes in Authorization header
     response = HTTParty.post(
       "#{migration.new_pds_host}/xrpc/com.atproto.server.createAccount",

@@ -252,6 +252,7 @@ services:
     image: eurosky-caddy:latest
     container_name: eurosky-caddy-${PARTITION:-production}
     hostname: eurosky-caddy-${PARTITION:-production}
+    init: true  # Reap zombie ssl_client processes from BusyBox wget healthcheck
     ports:
       - "80:80"      # HTTP (redirects to HTTPS)
       - "443:443"    # HTTPS (Let's Encrypt automatic)

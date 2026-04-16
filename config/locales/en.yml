@@ -108,6 +108,7 @@ en:
         deactivated_help: "If you don't remember your password, you can try:"
         deactivated_reset: "Reset your password:"
         deactivated_contact: "Contact the PDS admin at %{email} to remove this inactive account and restart the migration. Include your DID:"
+        pds_consent_title: "Destination Server Legal Terms"
         back: "Back"
         continue: "Continue"
 
@@ -173,6 +174,13 @@ en:
       authenticating_existing: "Authenticating with your existing account..."
       credentials_verified: "Credentials verified!"
       enter_target_password: "Please enter your password for this server"
+      pds_consent_description: "The server {pds} has published the following legal documents. Please review them before continuing."
+      pds_consent_tos: "Terms of Service"
+      pds_consent_privacy: "Privacy Policy"
+      pds_consent_both: "I have read and agree to the {tos_link} and {privacy_link} of the destination server."
+      pds_consent_single: "I have read and agree to the {link} of the destination server."
+      pds_consent_required: "Please review and accept the destination server's legal terms to continue."
+      pds_links_info: "The server {pds} has published legal documents:"
       # Step 4
       custom_domain_help: "Your handle {handle} is a custom domain. You can keep using it on the new server."
       enter_handle_short: "Please enter a handle"
@@ -414,6 +422,9 @@ en:
     migrations:
       # Create
       legal_consent_required: "You must agree to the Terms of Service and acknowledge the Privacy Policy to continue."
+      pds_consent_required: "You must agree to the destination server's Terms of Service and Privacy Policy to continue."
+      captcha_required: "Please complete the captcha verification."
+      captcha_failed: "Captcha verification failed. Please try again."
       verification_sent: "We've sent a verification code to %{email}. Enter it on the next page to start your migration."
       # Verify email
       email_verified: "Email verified! Your migration has started."

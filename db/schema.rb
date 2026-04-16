@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_03_000002) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_13_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -91,6 +91,21 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_03_000002) do
     t.index ["migration_type"], name: "index_migrations_on_migration_type"
     t.index ["status"], name: "index_migrations_on_status"
     t.index ["token"], name: "index_migrations_on_token", unique: true
+  end
+
+  create_table "pds_consents", force: :cascade do |t|
+    t.string "did", null: false
+    t.string "migration_token"
+    t.string "pds_host", null: false
+    t.string "tos_url"
+    t.string "privacy_policy_url"
+    t.text "ip_address_ciphertext"
+    t.datetime "accepted_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["did"], name: "index_pds_consents_on_did"
+    t.index ["migration_token"], name: "index_pds_consents_on_migration_token"
+    t.index ["pds_host"], name: "index_pds_consents_on_pds_host"
   end
 
   add_foreign_key "legal_consents", "legal_snapshots", column: "privacy_policy_snapshot_id"
