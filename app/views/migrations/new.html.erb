@@ -81,6 +81,82 @@
     color: #999;
     pointer-events: none;
   }
+
+  .typeahead-wrapper {
+    position: relative;
+  }
+
+  .typeahead-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    max-height: 280px;
+    overflow-y: auto;
+    display: none;
+  }
+
+  .typeahead-dropdown.active {
+    display: block;
+  }
+
+  .typeahead-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    gap: 10px;
+    transition: background 0.1s;
+  }
+
+  .typeahead-item:hover,
+  .typeahead-item.highlighted {
+    background: #f0f4ff;
+  }
+
+  .typeahead-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #e9ecef;
+  }
+
+  .typeahead-info {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .typeahead-displayname {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .typeahead-handle {
+    font-size: 13px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .typeahead-loading {
+    padding: 12px;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+  }
 </style>
 <% end %>
 
@@ -140,6 +216,145 @@
 
     // Initialize
     showStep(1);
+
+    // ── Handle Typeahead ──
+    (function() {
+      let debounceTimer = null;
+      let highlightIndex = -1;
+      let currentActors = [];
+
+      // Create dropdown container
+      const dropdown = document.createElement('div');
+      dropdown.className = 'typeahead-dropdown';
+      dropdown.id = 'handle-typeahead';
+      handleField.parentNode.classList.add('typeahead-wrapper');
+      handleField.parentNode.appendChild(dropdown);
+      handleField.setAttribute('autocomplete', 'off');
+
+      function hideDropdown() {
+        dropdown.classList.remove('active');
+        dropdown.innerHTML = '';
+        highlightIndex = -1;
+        currentActors = [];
+      }
+
+      function selectActor(handle) {
+        handleField.value = handle;
+        hideDropdown();
+        handleField.focus();
+      }
+
+      function renderActors(actors) {
+        currentActors = actors;
+        highlightIndex = -1;
+
+        if (actors.length === 0) {
+          hideDropdown();
+          return;
+        }
+
+        dropdown.innerHTML = actors.map(function(actor, idx) {
+          const avatarHtml = actor.avatar
+            ? '<img class="typeahead-avatar" src="' + actor.avatar + '" alt="" loading="lazy">'
+            : '<div class="typeahead-avatar"></div>';
+          const nameHtml = actor.display_name
+            ? '<div class="typeahead-displayname">' + escapeHtml(actor.display_name) + '</div>'
+            : '';
+          return '<div class="typeahead-item" data-index="' + idx + '">'
+            + avatarHtml
+            + '<div class="typeahead-info">'
+            + nameHtml
+            + '<div class="typeahead-handle">@' + escapeHtml(actor.handle) + '</div>'
+            + '</div></div>';
+        }).join('');
+
+        dropdown.classList.add('active');
+
+        // Attach click handlers
+        dropdown.querySelectorAll('.typeahead-item').forEach(function(item) {
+          item.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            var idx = parseInt(item.dataset.index);
+            selectActor(currentActors[idx].handle);
+          });
+        });
+      }
+
+      function updateHighlight() {
+        dropdown.querySelectorAll('.typeahead-item').forEach(function(item, idx) {
+          item.classList.toggle('highlighted', idx === highlightIndex);
+        });
+        if (highlightIndex >= 0) {
+          var el = dropdown.querySelector('.typeahead-item.highlighted');
+          if (el) el.scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function fetchActors(query) {
+        dropdown.innerHTML = '<div class="typeahead-loading">' + i18n('typeahead_searching') + '</div>';
+        dropdown.classList.add('active');
+
+        fetch('/migrations/search_actors?q=' + encodeURIComponent(query) + '&limit=8')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            // Only update if input still matches (user may have typed more)
+            if (handleField.value.trim().toLowerCase() === query.toLowerCase() ||
+                handleField.value.trim().toLowerCase().startsWith(query.toLowerCase())) {
+              renderActors(data.actors || []);
+            }
+          })
+          .catch(function() { hideDropdown(); });
+      }
+
+      handleField.addEventListener('input', function() {
+        var val = handleField.value.trim();
+        clearTimeout(debounceTimer);
+
+        if (val.length < 2 || handleField.readOnly) {
+          hideDropdown();
+          return;
+        }
+
+        debounceTimer = setTimeout(function() { fetchActors(val); }, 250);
+      });
+
+      handleField.addEventListener('keydown', function(e) {
+        if (!dropdown.classList.contains('active') || currentActors.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          highlightIndex = Math.min(highlightIndex + 1, currentActors.length - 1);
+          updateHighlight();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          highlightIndex = Math.max(highlightIndex - 1, 0);
+          updateHighlight();
+        } else if (e.key === 'Enter' && highlightIndex >= 0) {
+          e.preventDefault();
+          selectActor(currentActors[highlightIndex].handle);
+        } else if (e.key === 'Escape') {
+          hideDropdown();
+        }
+      });
+
+      handleField.addEventListener('blur', function() {
+        // Small delay to allow click on dropdown item
+        setTimeout(hideDropdown, 200);
+      });
+
+      handleField.addEventListener('focus', function() {
+        var val = handleField.value.trim();
+        if (val.length >= 2 && currentActors.length > 0 && !handleField.readOnly) {
+          dropdown.classList.add('active');
+        }
+      });
+    })();
 
     // Pre-select default target PDS if configured
     if (defaultTargetPds && pdsSelect) {
@@ -383,20 +598,46 @@
       showStep(2);
     });
 
+    function checkPdsConsentBeforeProceeding() {
+      var step3Error = document.getElementById('step3-error');
+      // Only require consent checkbox for Eurosky PDSs
+      if (!wizardData.pdsIsEurosky) {
+        step3Error.style.display = 'none';
+        return true;
+      }
+      var consentGroup = document.getElementById('pds-consent-group');
+      if (consentGroup.style.display === 'none') {
+        step3Error.style.display = 'none';
+        return true;
+      }
+      var checkbox = document.getElementById('pds-consent-checkbox');
+      if (checkbox.checked) {
+        step3Error.style.display = 'none';
+        return true;
+      }
+      showStatus(step3Error, i18n('pds_consent_required'), 'error');
+      consentGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      checkbox.focus();
+      return false;
+    }
+
     document.getElementById('step3-next').addEventListener('click', function(e) {
       e.preventDefault();
 
       const btn = e.target;
       const status = document.getElementById('pds-status');
+      const step3Error = document.getElementById('step3-error');
       const inviteGroup = document.getElementById('invite-code-group');
       let selectedPds = pdsSelect.value;
+
+      step3Error.style.display = 'none';
 
       if (selectedPds === 'custom') {
         selectedPds = customPdsField.value.trim();
       }
 
       if (!selectedPds || selectedPds === 'custom') {
-        alert(i18n('select_server'));
+        showStatus(step3Error, i18n('select_server'), 'error');
         return;
       }
 
@@ -425,6 +666,7 @@
               inviteCodeField.focus();
             } else {
               hideTargetPasswordSection();
+              if (!checkPdsConsentBeforeProceeding()) return;
               wizardData.pdsHost = selectedPds;
               showStep(4);
               setupStep4();
@@ -436,7 +678,7 @@
 
       // Check if invite code is required and empty (only for migration_out)
       if (!wizardData.accountExistsOnTarget && inviteCodeField.required && !inviteCodeField.value.trim()) {
-        showStatus(status, i18n('enter_invite_code'), 'error');
+        showStatus(step3Error, i18n('enter_invite_code'), 'error');
         inviteCodeField.focus();
         return;
       }
@@ -448,10 +690,12 @@
 
         if (!targetPassword) {
           showStatus(targetStatus, i18n('enter_target_password'), 'error');
+          showStatus(step3Error, i18n('enter_target_password'), 'error');
           return;
         }
 
         if (wizardData.targetCredentialsVerified) {
+          if (!checkPdsConsentBeforeProceeding()) return;
           wizardData.pdsHost = selectedPds;
           showStep(4);
           setupStep4();
@@ -489,6 +733,7 @@
 
           if (data.error) {
             showStatus(targetStatus, data.error, 'error');
+            showStatus(step3Error, data.error, 'error');
             return;
           }
 
@@ -499,6 +744,7 @@
           showStatus(targetStatus, i18n('credentials_verified'), 'success');
 
           setTimeout(() => {
+            if (!checkPdsConsentBeforeProceeding()) return;
             wizardData.pdsHost = selectedPds;
             showStep(4);
             setupStep4();
@@ -507,11 +753,13 @@
         .catch(error => {
           btn.disabled = false;
           btn.textContent = i18n('continue');
-          showStatus(targetStatus, 'Network error. Please try again.', 'error');
+          showStatus(targetStatus, i18n('network_error'), 'error');
+          showStatus(step3Error, i18n('network_error'), 'error');
         });
         return;
       }
 
+      if (!checkPdsConsentBeforeProceeding()) return;
       wizardData.pdsHost = selectedPds;
       showStep(4);
       setupStep4();
@@ -609,6 +857,56 @@
       wizardData.accountDeactivatedOnTarget = false;
     }
 
+    function updatePdsConsentUI() {
+      const consentGroup = document.getElementById('pds-consent-group');
+      const consentCheckbox = document.getElementById('pds-consent-checkbox');
+      const consentLabel = document.getElementById('pds-consent-label');
+      const consentDescription = document.getElementById('pds-consent-description');
+      const pdsLinksGroup = document.getElementById('pds-links-group');
+      const pdsLinksContent = document.getElementById('pds-links-content');
+      const hasTos = wizardData.pdsTosUrl;
+      const hasPrivacy = wizardData.pdsPrivacyPolicyUrl;
+
+      // Reset both UI elements
+      consentGroup.style.display = 'none';
+      consentCheckbox.checked = false;
+      pdsLinksGroup.style.display = 'none';
+
+      if (!hasTos && !hasPrivacy) return;
+
+      // Build hostname for display
+      try {
+        var pdsHostname = new URL(wizardData.pdsVerifiedHost).hostname;
+      } catch(e) {
+        var pdsHostname = wizardData.pdsVerifiedHost;
+      }
+
+      // Build link elements
+      var links = [];
+      if (hasTos) {
+        links.push('<a href="' + wizardData.pdsTosUrl + '" target="_blank" rel="noopener">' + i18n('pds_consent_tos') + '</a>');
+      }
+      if (hasPrivacy) {
+        links.push('<a href="' + wizardData.pdsPrivacyPolicyUrl + '" target="_blank" rel="noopener">' + i18n('pds_consent_privacy') + '</a>');
+      }
+
+      if (wizardData.pdsIsEurosky) {
+        // Eurosky PDS: show consent checkbox (required to proceed)
+        consentGroup.style.display = 'block';
+        consentDescription.textContent = i18n('pds_consent_description', {pds: pdsHostname});
+
+        if (hasTos && hasPrivacy) {
+          consentLabel.innerHTML = i18n('pds_consent_both', {tos_link: links[0], privacy_link: links[1]});
+        } else {
+          consentLabel.innerHTML = i18n('pds_consent_single', {link: links[0]});
+        }
+      } else {
+        // Third-party PDS: show links as informational only (no checkbox)
+        pdsLinksGroup.style.display = 'block';
+        pdsLinksContent.innerHTML = i18n('pds_links_info', {pds: pdsHostname}) + ' ' + links.join(' · ');
+      }
+    }
+
     // PDS selection
     pdsSelect.addEventListener('change', function(e) {
       const selectedValue = e.target.value;
@@ -618,7 +916,11 @@
 
       wizardData.pdsVerified = false;
       wizardData.pdsVerifiedHost = null;
+      wizardData.pdsTosUrl = null;
+      wizardData.pdsPrivacyPolicyUrl = null;
+      wizardData.pdsIsEurosky = false;
       hideTargetPasswordSection();
+      updatePdsConsentUI();
 
       if (selectedValue === 'custom') {
         customGroup.style.display = 'block';
@@ -650,6 +952,10 @@
       if (pdsSelect.value === 'custom') {
         wizardData.pdsVerified = false;
         wizardData.pdsVerifiedHost = null;
+        wizardData.pdsTosUrl = null;
+        wizardData.pdsPrivacyPolicyUrl = null;
+        wizardData.pdsIsEurosky = false;
+        updatePdsConsentUI();
       }
     });
 
@@ -680,6 +986,14 @@
         wizardData.pdsContactEmail = data.contact_email || null;
         wizardData.pdsVerified = true;
         wizardData.pdsVerifiedHost = pdsHost;
+
+        // PDS capabilities from describeServer
+        wizardData.pdsCaptchaRequired = data.captcha_required || false;
+        wizardData.pdsCaptchaSiteKey = data.captcha_site_key || null;
+        wizardData.pdsTosUrl = data.tos_url || null;
+        wizardData.pdsPrivacyPolicyUrl = data.privacy_policy_url || null;
+        wizardData.pdsIsEurosky = data.is_eurosky || false;
+        updatePdsConsentUI();
 
         if (data.invite_code_required) {
           inviteGroup.style.display = 'block';
@@ -975,6 +1289,11 @@
       document.getElementById('migration_new_access_token').value = wizardData.newPdsAccessToken || '';
       document.getElementById('migration_new_refresh_token').value = wizardData.newPdsRefreshToken || '';
       document.getElementById('migration_target_pds_contact_email').value = wizardData.pdsContactEmail || '';
+      document.getElementById('pds_tos_url').value = wizardData.pdsTosUrl || '';
+      document.getElementById('pds_privacy_policy_url').value = wizardData.pdsPrivacyPolicyUrl || '';
+      document.getElementById('pds_consent_value').value = document.getElementById('pds-consent-checkbox').checked ? '1' : '0';
+      document.getElementById('pds_captcha_required').value = wizardData.pdsCaptchaRequired ? '1' : '0';
+      document.getElementById('pds_captcha_site_key').value = wizardData.pdsCaptchaSiteKey || '';
 
       passwordField.value = '';
       const targetPwdField = document.getElementById('target-pds-password');
@@ -1009,6 +1328,12 @@
       <%= hidden_field_tag 'migration[old_access_token]', '', id: 'migration_old_access_token' %>
       <%= hidden_field_tag 'migration[old_refresh_token]', '', id: 'migration_old_refresh_token' %>
       <%= hidden_field_tag 'migration[target_pds_contact_email]', '', id: 'migration_target_pds_contact_email' %>
+      <!-- Hidden fields for PDS legal URLs (populated from describeServer) -->
+      <%= hidden_field_tag 'pds_tos_url', '', id: 'pds_tos_url' %>
+      <%= hidden_field_tag 'pds_privacy_policy_url', '', id: 'pds_privacy_policy_url' %>
+      <%= hidden_field_tag 'pds_consent', '0', id: 'pds_consent_value' %>
+      <%= hidden_field_tag 'pds_captcha_required', '0', id: 'pds_captcha_required' %>
+      <%= hidden_field_tag 'pds_captcha_site_key', '', id: 'pds_captcha_site_key' %>
 
       <!-- Progress Bar -->
       <div class="step-progress-bar">
@@ -1163,9 +1488,26 @@
           <div id="target-password-status" class="lookup-status"></div>
         </div>
 
+        <!-- PDS Terms of Service / Privacy Policy consent (Eurosky PDS only) -->
+        <div id="pds-consent-group" class="alert alert-info border-start border-primary border-4 rounded-1 py-2 px-3 mt-3 mb-3 small" style="display: none;">
+          <div class="fw-semibold mb-1" style="color: #0c4a6e;"><%= t('migrations.new.step3.pds_consent_title') %></div>
+          <p class="mb-2" style="color: #164e63;" id="pds-consent-description"></p>
+          <div class="form-check mb-0">
+            <input type="checkbox" id="pds-consent-checkbox" class="form-check-input">
+            <label class="form-check-label" for="pds-consent-checkbox" id="pds-consent-label"></label>
+          </div>
+        </div>
+
+        <!-- PDS legal links (informational, for non-Eurosky PDSs) -->
+        <div id="pds-links-group" class="text-muted small mt-3 mb-3" style="display: none;">
+          <span id="pds-links-content"></span>
+        </div>
+
         <!-- Hidden fields for target PDS tokens -->
         <%= hidden_field_tag 'migration[new_access_token]', '', id: 'migration_new_access_token' %>
         <%= hidden_field_tag 'migration[new_refresh_token]', '', id: 'migration_new_refresh_token' %>
+
+        <div id="step3-error" class="lookup-status"></div>
 
         <div class="d-flex gap-2 mt-4">
           <button type="button" id="step3-back" class="btn btn-secondary"><%= t('migrations.new.step3.back') %></button>
@@ -1271,6 +1613,7 @@
     <% end %>
 
     <!-- Legal Links -->
+    <!--
     <% if EuroskyConfig::PRIVACY_POLICY_URL.present? || EuroskyConfig::TERMS_OF_SERVICE_URL.present? %>
       <div class="text-center mt-3 small text-muted">
         <% if EuroskyConfig::PRIVACY_POLICY_URL.present? %>
@@ -1284,6 +1627,7 @@
         <% end %>
       </div>
     <% end %>
+    -->
 
     <!-- Image Attribution -->
     <div class="text-center mt-3 small text-muted">

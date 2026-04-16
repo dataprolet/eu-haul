@@ -237,6 +237,9 @@
       }
     }
   </style>
+  <% if @migration.progress_data&.dig('captcha_required') && @migration.progress_data&.dig('captcha_site_key') && !@migration.email_verified? %>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  <% end %>
 <% end %>
 
 <% show_sidebar = @migration.backup_available? || (@migration.rotation_key.present? && @migration.email_verified?) || (@migration.cancellable? && @migration.email_verified?) %>
@@ -308,6 +311,11 @@
             <%= label_tag :verification_code, t('migrations.show.verification_label') %>
             <%= text_field_tag :verification_code, nil, required: true, placeholder: t('migrations.show.verification_placeholder'), autocomplete: "off", maxlength: 7, class: "form-control font-monospace fs-3 text-center text-uppercase", style: "letter-spacing: 4px;" %>
           </div>
+          <% if @migration.progress_data&.dig('captcha_required') && @migration.progress_data&.dig('captcha_site_key') %>
+            <div class="d-flex justify-content-center mt-3">
+              <div class="h-captcha" data-sitekey="<%= @migration.progress_data['captcha_site_key'] %>"></div>
+            </div>
+          <% end %>
           <%= submit_tag t('migrations.show.verify_button'), class: "btn btn-lg btn-gradient w-100 mt-3" %>
         <% end %>
 

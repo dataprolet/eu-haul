@@ -292,15 +292,33 @@ class MigrationsController < ApplicationController
 
     # Check if invite codes are required
     invite_code_required = server_info['inviteCodeRequired'] || false
+    captcha_required = server_info['phoneVerificationRequired'] || false
     available_user_domains = server_info['availableUserDomains'] || []
     contact_email = server_info.dig('contact', 'email')
+    tos_url = server_info.dig('links', 'termsOfService')
+    privacy_policy_url = server_info.dig('links', 'privacyPolicy')
 
-    Rails.logger.info("PDS #{pds_host} - Invite code required: #{invite_code_required}, contact: #{contact_email || 'none'}")
+    # If captcha required, fetch the hCaptcha site key from the gatekeeper's signup page
+    captcha_site_key = nil
+    if captcha_required
+      captcha_site_key = fetch_captcha_site_key(pds_host)
+      Rails.logger.info("PDS #{pds_host} - captcha site key: #{captcha_site_key || 'not found'}")
+    end
+
+    # Check if this is an Eurosky PDS (only show consent UI for Eurosky)
+    is_eurosky = is_eurosky_pds?(pds_host)
+
+    Rails.logger.info("PDS #{pds_host} - Invite code required: #{invite_code_required}, captcha: #{captcha_required}, is_eurosky: #{is_eurosky}, contact: #{contact_email || 'none'}, tos: #{tos_url || 'none'}, privacy: #{privacy_policy_url || 'none'}")
 
     render json: {
       invite_code_required: invite_code_required,
+      captcha_required: captcha_required,
+      captcha_site_key: captcha_site_key,
       available_user_domains: available_user_domains,
-      contact_email: contact_email
+      contact_email: contact_email,
+      tos_url: tos_url,
+      privacy_policy_url: privacy_policy_url,
+      is_eurosky: is_eurosky
     }
   rescue JSON::ParserError => e
     Rails.logger.error("Failed to parse PDS response: #{e.message}")
@@ -310,6 +328,46 @@ class MigrationsController < ApplicationController
     Rails.logger.error(e.backtrace.join("\n")) if e.respond_to?(:backtrace)
     error_message = Rails.env.production? ? I18n.t('controllers.migrations.pds_connect_check') : "Failed to connect to PDS: #{e.message}"
     render json: { error: error_message }, status: :internal_server_error
+  end
+
+  # GET /migrations/search_actors
+  # Typeahead search for ATProto actors via the public Bluesky AppView API
+  #
+  # Params:
+  #   - q: Search query (minimum 2 characters)
+  #   - limit: Max results (default 8, max 25)
+  #
+  # Response:
+  #   - Success: { actors: [{ handle: '...', display_name: '...', avatar: '...' }, ...] }
+  #   - Failure: { actors: [] }
+  def search_actors
+    query = params[:q]&.strip
+    limit = [(params[:limit] || 8).to_i, 25].min
+
+    if query.blank? || query.length < 2
+      render json: { actors: [] }
+      return
+    end
+
+    appview_url = "https://public.api.bsky.app/xrpc/app.bsky.actor.searchActorsTypeahead"
+    response = HTTParty.get(appview_url, query: { q: query, limit: limit }, timeout: 5)
+
+    if response.success?
+      data = JSON.parse(response.body)
+      actors = (data['actors'] || []).map do |actor|
+        {
+          handle: actor['handle'],
+          display_name: actor['displayName'],
+          avatar: actor['avatar']
+        }
+      end
+      render json: { actors: actors }
+    else
+      render json: { actors: [] }
+    end
+  rescue StandardError => e
+    Rails.logger.warn("Actor search failed: #{e.message}")
+    render json: { actors: [] }
   end
 
   # POST /migrations/lookup_handle
@@ -497,6 +555,12 @@ class MigrationsController < ApplicationController
         @migration.progress_data['password_generated_at'] = Time.current.iso8601
       end
 
+      # Record whether the target PDS requires captcha (from describeServer phoneVerificationRequired)
+      if params[:pds_captcha_required] == '1'
+        @migration.progress_data['captcha_required'] = true
+        @migration.progress_data['captcha_site_key'] = params[:pds_captcha_site_key] if params[:pds_captcha_site_key].present?
+      end
+
       # Set the invite code if provided and enabled (Lockbox encrypts automatically)
       if EuroskyConfig.invite_code_enabled? && params[:migration][:invite_code].present?
         @migration.invite_code = params[:migration][:invite_code]
@@ -506,6 +570,16 @@ class MigrationsController < ApplicationController
       # Require legal consent (GDPR compliance — must not be pre-ticked, must be explicit)
       unless params[:migration][:legal_consent] == "1"
         @migration.errors.add(:base, I18n.t('controllers.migrations.legal_consent_required'))
+        render :new, status: :unprocessable_entity
+        return
+      end
+
+      # Require PDS consent only for Eurosky PDSs (we are the data controller)
+      # For third-party PDSs, legal links are shown as informational only
+      pds_tos_url = params[:pds_tos_url].presence
+      pds_privacy_url = params[:pds_privacy_policy_url].presence
+      if is_eurosky_pds?(@migration.new_pds_host) && (pds_tos_url || pds_privacy_url) && params[:pds_consent] != "1"
+        @migration.errors.add(:base, I18n.t('controllers.migrations.pds_consent_required'))
         render :new, status: :unprocessable_entity
         return
       end
@@ -523,6 +597,21 @@ class MigrationsController < ApplicationController
           ip_address: request.remote_ip,
           accepted_at: Time.current
         )
+
+        # Record PDS consent ONLY for Eurosky migrations
+        # For third-party PDSs, we show the consent checkbox (gating mechanism) but don't
+        # store consent data, as it would make Eurosky a data controller for foreign PDS compliance
+        if is_eurosky_pds?(@migration.new_pds_host) && (pds_tos_url || pds_privacy_url)
+          PdsConsent.create!(
+            did: @migration.did,
+            migration_token: @migration.token,
+            pds_host: @migration.new_pds_host,
+            tos_url: pds_tos_url,
+            privacy_policy_url: pds_privacy_url,
+            ip_address: request.remote_ip,
+            accepted_at: Time.current
+          )
+        end
 
         redirect_to migration_by_token_path(@migration.token),
                     notice: I18n.t('controllers.migrations.verification_sent', email: @migration.email)
@@ -556,6 +645,28 @@ class MigrationsController < ApplicationController
       redirect_to migration_by_token_path(@migration.token),
                   alert: I18n.t('controllers.migrations.enter_code')
       return
+    end
+
+    # Verify hCaptcha if the target PDS requires captcha (per describeServer phoneVerificationRequired)
+    if @migration.progress_data&.dig('captcha_required')
+      captcha_response = params[:'h-captcha-response']
+      if captcha_response.blank?
+        redirect_to migration_by_token_path(@migration.token),
+                    alert: I18n.t('controllers.migrations.captcha_required')
+        return
+      end
+
+      gate_code = exchange_captcha_for_gate_code(captcha_response, @migration)
+      if gate_code.nil?
+        redirect_to migration_by_token_path(@migration.token),
+                    alert: I18n.t('controllers.migrations.captcha_failed')
+        return
+      end
+
+      # Store the gate code so CreateAccountJob can pass it as verificationCode
+      @migration.progress_data ||= {}
+      @migration.progress_data['hcaptcha_token'] = gate_code
+      @migration.save!
     end
 
     if @migration.verify_email!(verification_code)
@@ -1316,6 +1427,65 @@ class MigrationsController < ApplicationController
     sanitize_user_input(handle)
   end
 
+  # Verify hCaptcha response token against hCaptcha's API
+  # Fetch the hCaptcha site key from the gatekeeper's signup page HTML.
+  # The site key is embedded in a data-sitekey attribute on the captcha div.
+  def fetch_captcha_site_key(pds_host)
+    gate_url = "#{pds_host}/gate/signup?handle=probe&state=probe"
+    response = HTTParty.get(gate_url, timeout: 10)
+    return nil unless response.success?
+
+    match = response.body.match(/data-sitekey="([^"]+)"/)
+    match&.captures&.first
+  rescue StandardError => e
+    Rails.logger.warn("Failed to fetch captcha site key from #{pds_host}: #{e.message}")
+    nil
+  end
+
+  # Exchange an hCaptcha response token for a gate code from pds-gatekeeper.
+  # Posts to the gatekeeper's /gate/signup endpoint which validates the captcha,
+  # generates a JWE gate code, stores it in the PDS database, and returns a
+  # redirect with ?code=GATE_CODE. We extract that code for createAccount.
+  def exchange_captcha_for_gate_code(captcha_response, migration)
+    gate_url = "#{migration.new_pds_host}/gate/signup?handle=#{CGI.escape(migration.new_handle)}&state=migration"
+
+    Rails.logger.info("Exchanging hCaptcha token for gate code at #{gate_url}")
+
+    # POST with form-encoded body (gatekeeper expects form data, not JSON)
+    # follow_redirects: false so we can extract the code from the Location header
+    result = HTTParty.post(
+      gate_url,
+      body: {
+        'h-captcha-response' => captcha_response,
+        'redirect_url' => "#{migration.new_pds_host}"
+      },
+      follow_redirects: false,
+      timeout: 15
+    )
+
+    if result.code == 302 || result.code == 303
+      location = result.headers['location']
+      uri = URI.parse(location)
+      code = CGI.parse(uri.query || '')['code']&.first
+
+      if code.present?
+        Rails.logger.info("Gate code obtained for handle #{migration.new_handle}")
+        return code
+      else
+        Rails.logger.warn("Gate redirect had no code param: #{location}")
+        return nil
+      end
+    else
+      Rails.logger.warn("Gate code exchange failed (HTTP #{result.code}): #{result.body}")
+      return nil
+    end
+  rescue StandardError => e
+    Rails.logger.error("Gate code exchange error: #{e.message}")
+    nil
+  end
+
+
+
   # Normalize PDS host URL (ensure https:// prefix)
   def normalize_pds_host(host)
     return nil if host.nil?
@@ -1327,6 +1497,31 @@ class MigrationsController < ApplicationController
     host = host.chomp('/')
 
     host
+  end
+
+  # Check if a PDS host is Eurosky's own PDS
+  # Only records PdsConsent for Eurosky migrations to avoid Eurosky becoming
+  # a data controller for third-party PDS compliance data
+  def is_eurosky_pds?(pds_host)
+    return false if pds_host.blank?
+
+    normalized = normalize_pds_host(pds_host)
+
+    # In bound mode, only the pre-configured PDS is Eurosky
+    if EuroskyConfig.bound_mode?
+      normalized_target = normalize_pds_host(EuroskyConfig::TARGET_PDS_HOST)
+      return normalized == normalized_target
+    end
+
+    # In standalone mode, only record if there's a configured default Eurosky PDS
+    # This is optional — if not set, no PdsConsent records are created (conservative approach)
+    if EuroskyConfig::DEFAULT_TARGET_PDS.present?
+      normalized_default = normalize_pds_host(EuroskyConfig::DEFAULT_TARGET_PDS)
+      return normalized == normalized_default
+    end
+
+    # Default: don't record for unknown PDS (safer for GDPR compliance)
+    false
   end
 
   # Determine which status to retry from based on current failed status

@@ -7,11 +7,14 @@
 #   - Migration is in pending_plc status
 #   - PLC token was requested at least 6 hours ago
 #   - No reminder was sent in the last 6 hours
+#   - No more than 4 reminders have been sent (MAX_REMINDERS)
 #
 # Queue: :low (non-urgent, should not compete with migration jobs)
 
 class PlcTokenReminderJob < ApplicationJob
   queue_as :low
+
+  MAX_REMINDERS = 4
 
   def perform
     migrations = Migration.pending_plc
@@ -35,6 +38,13 @@ class PlcTokenReminderJob < ApplicationJob
           skipped += 1
           next
         end
+      end
+
+      # Skip if max reminders already sent
+      reminder_count = migration.progress_data['plc_reminder_count'].to_i
+      if reminder_count >= MAX_REMINDERS
+        skipped += 1
+        next
       end
 
       begin
