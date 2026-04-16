@@ -146,6 +146,7 @@ en:
     # ──────────────────────────────────────────
     js:
       # Step 1
+      typeahead_searching: "Searching..."
       enter_handle: "Please enter a handle"
       enter_password: "Please enter your password"
       handle_needs_domain: "Handle must include a domain (e.g., user.bsky.social)"

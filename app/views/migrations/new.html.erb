@@ -81,6 +81,82 @@
     color: #999;
     pointer-events: none;
   }
+
+  .typeahead-wrapper {
+    position: relative;
+  }
+
+  .typeahead-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    max-height: 280px;
+    overflow-y: auto;
+    display: none;
+  }
+
+  .typeahead-dropdown.active {
+    display: block;
+  }
+
+  .typeahead-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    gap: 10px;
+    transition: background 0.1s;
+  }
+
+  .typeahead-item:hover,
+  .typeahead-item.highlighted {
+    background: #f0f4ff;
+  }
+
+  .typeahead-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #e9ecef;
+  }
+
+  .typeahead-info {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .typeahead-displayname {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .typeahead-handle {
+    font-size: 13px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .typeahead-loading {
+    padding: 12px;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+  }
 </style>
 <% end %>
 
@@ -140,6 +216,145 @@
 
     // Initialize
     showStep(1);
+
+    // ── Handle Typeahead ──
+    (function() {
+      let debounceTimer = null;
+      let highlightIndex = -1;
+      let currentActors = [];
+
+      // Create dropdown container
+      const dropdown = document.createElement('div');
+      dropdown.className = 'typeahead-dropdown';
+      dropdown.id = 'handle-typeahead';
+      handleField.parentNode.classList.add('typeahead-wrapper');
+      handleField.parentNode.appendChild(dropdown);
+      handleField.setAttribute('autocomplete', 'off');
+
+      function hideDropdown() {
+        dropdown.classList.remove('active');
+        dropdown.innerHTML = '';
+        highlightIndex = -1;
+        currentActors = [];
+      }
+
+      function selectActor(handle) {
+        handleField.value = handle;
+        hideDropdown();
+        handleField.focus();
+      }
+
+      function renderActors(actors) {
+        currentActors = actors;
+        highlightIndex = -1;
+
+        if (actors.length === 0) {
+          hideDropdown();
+          return;
+        }
+
+        dropdown.innerHTML = actors.map(function(actor, idx) {
+          const avatarHtml = actor.avatar
+            ? '<img class="typeahead-avatar" src="' + actor.avatar + '" alt="" loading="lazy">'
+            : '<div class="typeahead-avatar"></div>';
+          const nameHtml = actor.display_name
+            ? '<div class="typeahead-displayname">' + escapeHtml(actor.display_name) + '</div>'
+            : '';
+          return '<div class="typeahead-item" data-index="' + idx + '">'
+            + avatarHtml
+            + '<div class="typeahead-info">'
+            + nameHtml
+            + '<div class="typeahead-handle">@' + escapeHtml(actor.handle) + '</div>'
+            + '</div></div>';
+        }).join('');
+
+        dropdown.classList.add('active');
+
+        // Attach click handlers
+        dropdown.querySelectorAll('.typeahead-item').forEach(function(item) {
+          item.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            var idx = parseInt(item.dataset.index);
+            selectActor(currentActors[idx].handle);
+          });
+        });
+      }
+
+      function updateHighlight() {
+        dropdown.querySelectorAll('.typeahead-item').forEach(function(item, idx) {
+          item.classList.toggle('highlighted', idx === highlightIndex);
+        });
+        if (highlightIndex >= 0) {
+          var el = dropdown.querySelector('.typeahead-item.highlighted');
+          if (el) el.scrollIntoView({ block: 'nearest' });
+        }
+      }
+
+      function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function fetchActors(query) {
+        dropdown.innerHTML = '<div class="typeahead-loading">' + i18n('typeahead_searching') + '</div>';
+        dropdown.classList.add('active');
+
+        fetch('/migrations/search_actors?q=' + encodeURIComponent(query) + '&limit=8')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            // Only update if input still matches (user may have typed more)
+            if (handleField.value.trim().toLowerCase() === query.toLowerCase() ||
+                handleField.value.trim().toLowerCase().startsWith(query.toLowerCase())) {
+              renderActors(data.actors || []);
+            }
+          })
+          .catch(function() { hideDropdown(); });
+      }
+
+      handleField.addEventListener('input', function() {
+        var val = handleField.value.trim();
+        clearTimeout(debounceTimer);
+
+        if (val.length < 2 || handleField.readOnly) {
+          hideDropdown();
+          return;
+        }
+
+        debounceTimer = setTimeout(function() { fetchActors(val); }, 250);
+      });
+
+      handleField.addEventListener('keydown', function(e) {
+        if (!dropdown.classList.contains('active') || currentActors.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          highlightIndex = Math.min(highlightIndex + 1, currentActors.length - 1);
+          updateHighlight();
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          highlightIndex = Math.max(highlightIndex - 1, 0);
+          updateHighlight();
+        } else if (e.key === 'Enter' && highlightIndex >= 0) {
+          e.preventDefault();
+          selectActor(currentActors[highlightIndex].handle);
+        } else if (e.key === 'Escape') {
+          hideDropdown();
+        }
+      });
+
+      handleField.addEventListener('blur', function() {
+        // Small delay to allow click on dropdown item
+        setTimeout(hideDropdown, 200);
+      });
+
+      handleField.addEventListener('focus', function() {
+        var val = handleField.value.trim();
+        if (val.length >= 2 && currentActors.length > 0 && !handleField.readOnly) {
+          dropdown.classList.add('active');
+        }
+      });
+    })();
 
     // Pre-select default target PDS if configured
     if (defaultTargetPds && pdsSelect) {

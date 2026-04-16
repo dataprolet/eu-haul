@@ -330,6 +330,46 @@ class MigrationsController < ApplicationController
     render json: { error: error_message }, status: :internal_server_error
   end
 
+  # GET /migrations/search_actors
+  # Typeahead search for ATProto actors via the public Bluesky AppView API
+  #
+  # Params:
+  #   - q: Search query (minimum 2 characters)
+  #   - limit: Max results (default 8, max 25)
+  #
+  # Response:
+  #   - Success: { actors: [{ handle: '...', display_name: '...', avatar: '...' }, ...] }
+  #   - Failure: { actors: [] }
+  def search_actors
+    query = params[:q]&.strip
+    limit = [(params[:limit] || 8).to_i, 25].min
+
+    if query.blank? || query.length < 2
+      render json: { actors: [] }
+      return
+    end
+
+    appview_url = "https://public.api.bsky.app/xrpc/app.bsky.actor.searchActorsTypeahead"
+    response = HTTParty.get(appview_url, query: { q: query, limit: limit }, timeout: 5)
+
+    if response.success?
+      data = JSON.parse(response.body)
+      actors = (data['actors'] || []).map do |actor|
+        {
+          handle: actor['handle'],
+          display_name: actor['displayName'],
+          avatar: actor['avatar']
+        }
+      end
+      render json: { actors: actors }
+    else
+      render json: { actors: [] }
+    end
+  rescue StandardError => e
+    Rails.logger.warn("Actor search failed: #{e.message}")
+    render json: { actors: [] }
+  end
+
   # POST /migrations/lookup_handle
   # Authenticate and fetch account details (AJAX endpoint)
   #

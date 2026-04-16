@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   # Migrations resource routes
   resources :migrations, only: [:new, :create, :show] do
     collection do
+      get :search_actors
       post :lookup_handle
       post :check_pds
       post :check_handle
