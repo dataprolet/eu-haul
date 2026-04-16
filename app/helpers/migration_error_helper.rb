@@ -464,7 +464,7 @@ module MigrationErrorHelper
       what_to_do: [
         "Wait for automatic retry",
         "If this persists, check the technical details below",
-        "Contact support if you need assistance: support@example.com"
+        "Contact support if you need assistance: #{ENV.fetch('SUPPORT_EMAIL', 'support@example.com')}"
       ],
       show_retry_button: retry_attempt >= max_attempts,
       help_link: "/docs/troubleshooting"
